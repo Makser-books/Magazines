@@ -17,6 +17,7 @@ var FlipBook = function() {
 	this.bStartNoteGesture = false;
 	this.currentNote = null;
 	this.bStartNote = false;
+	this.isStartPage = false;
 	this.bStartHighLightGesture = false;
 	this.currentHighLight = null;
 	this.bStartHighLight = false;
@@ -292,9 +293,13 @@ FlipBook.prototype = {
 		if(e.offsetParent != null) offset += this.getElementTop(e.offsetParent);
 		return offset;
 	}
-	,showBottomBar: function(e) {
-		var cid = haxe.Timer.delay($bind(this,this.cPage),500);
-		this.topMenuBarBg.style.cssText = "opacity:" + RunTime.bottomBarAlpha + ";  -webkit-transition: 0.3s ease-out; ";
+	,showBottomBar: function(e,t) {
+		if(t == null) t = "";
+		this.btnNextPage.style.display = "inline-block";
+		this.btnPrevPage.style.display = "inline-block";
+		this.btnFirstPage.style.display = "inline-block";
+		this.btnLastPage.style.display = "inline-block";
+		this.topMenuBarBg.style.cssText = "opacity:" + RunTime.bottomBarAlpha + ";  -webkit-transition: 0.0s ease-out; ";
 		this.bottomBar.style.cssText = "opacity:" + 1 + "; -webkit-transition: 0.0s ease-out; ";
 		this.bottomBar.style.display = "inline-block";
 		this.bottomBarBg.style.opacity = RunTime.bottomBarAlpha;
@@ -302,16 +307,16 @@ FlipBook.prototype = {
 		this.bCanGestureZoom = false;
 		RunTime.saveBottomBarVisible(true);
 		this.bShowBottomBar = true;
-		var t = js.Lib.window.navigator.userAgent;
-		if(t.indexOf("CPU iPhone OS ") != -1) {
-			var iosVar = HxOverrides.substr(t,t.indexOf("CPU iPhone OS ") + 14,1);
+		var t1 = js.Lib.window.navigator.userAgent;
+		if(t1.indexOf("CPU iPhone OS ") != -1) {
+			var iosVar = HxOverrides.substr(t1,t1.indexOf("CPU iPhone OS ") + 14,1);
 			if(iosVar == "7") {
 				if(RunTime.clientWidth >= 480) this.bottomBar.style.top = "170px";
 			}
 		}
-		var t1 = js.Lib.window.navigator.userAgent;
-		if(t1.indexOf("CPU iPhone OS ") != -1) {
-			var iosVar = HxOverrides.substr(t1,t1.indexOf("CPU iPhone OS ") + 14,1);
+		var t2 = js.Lib.window.navigator.userAgent;
+		if(t2.indexOf("CPU iPhone OS ") != -1) {
+			var iosVar = HxOverrides.substr(t2,t2.indexOf("CPU iPhone OS ") + 14,1);
 			if(iosVar == "7") {
 				if(RunTime.clientWidth >= 480) {
 					var tid = new haxe.Timer(300);
@@ -319,6 +324,11 @@ FlipBook.prototype = {
 						if(js.Lib.document.body.scrollTop != 0) js.Lib.document.body.scrollTop = 0;
 					};
 				}
+			}
+		}
+		if(js.Lib.window.navigator.userAgent.indexOf("iPad") != -1) {
+			if(js.Lib.window.screen.width == 768 && js.Lib.window.screen.height == 1024) {
+				if(RunTime.clientWidth >= 1024) this.bottomBar.style.bottom = "17px";
 			}
 		}
 	}
@@ -336,12 +346,16 @@ FlipBook.prototype = {
 			var t = e.target;
 			if(t == this.btnAutoFlip || t == this.btnContents || t == this.btnFirstPage || t == this.btnLastPage || t == this.btnNextPage || t == this.btnPrevPage || t == this.btnSearch || t == this.btnThumbs || t == this.tbPage || t == this.imgLogo) return;
 		}
+		this.btnNextPage.style.display = "none";
+		this.btnPrevPage.style.display = "none";
+		this.btnFirstPage.style.display = "none";
+		this.btnLastPage.style.display = "none";
 		if(atOnce) {
-			this.topMenuBarBg.style.cssText = "opacity:0 ; ";
-			this.bottomBar.style.cssText = "opacity: 0 ;";
+			this.topMenuBarBg.style.cssText = "display:none;";
+			this.bottomBar.style.cssText = "display:none;";
 		} else {
-			this.topMenuBarBg.style.cssText = "opacity:0 ; -webkit-transition: 0.3s ease-out; ";
-			this.bottomBar.style.cssText = "opacity: 0 ; -webkit-transition: 0.0s ease-out; ";
+			this.topMenuBarBg.style.cssText = "display:none;";
+			this.bottomBar.style.cssText = "display:none;";
 			this.bCanGestureZoom = false;
 		}
 		if(e != null) this.bShowBottomBar = false;
@@ -495,7 +509,7 @@ FlipBook.prototype = {
 		var _g1 = 0, _g = RunTime.book.bookmarks.length;
 		while(_g1 < _g) {
 			var i1 = _g1++;
-			haxe.Log.trace(RunTime.book.bookmarks[i1].pageNum,{ fileName : "FlipBook.hx", lineNumber : 1754, className : "FlipBook", methodName : "removeBookmark"});
+			haxe.Log.trace(RunTime.book.bookmarks[i1].pageNum,{ fileName : "FlipBook.hx", lineNumber : 1706, className : "FlipBook", methodName : "removeBookmark"});
 			if(pageNum + 1 != RunTime.book.bookmarks[i1].pageNum) tmp.push(RunTime.book.bookmarks[i1]); else currentBookmark = RunTime.book.bookmarks[i1];
 		}
 		if(currentBookmark != null) currentBookmark.remove();
@@ -754,20 +768,8 @@ FlipBook.prototype = {
 	,clearCtxHighLight: function() {
 		this.bookContext.highlights = null;
 	}
-	,clearButtonsCtx: function() {
-		var buttons = new Array();
-		if(RunTime.book != null && RunTime.book.buttons != null) {
-			var _g1 = 0, _g = RunTime.book.buttons.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				var item = RunTime.book.buttons[i];
-				item.clearGifPlay();
-			}
-		}
-	}
 	,clearCtxButtons: function() {
 		this.bookContext.buttons = null;
-		this.clearButtonsCtx();
 	}
 	,clearCtxHotlinks: function() {
 		this.bookContext.hotlinks = null;
@@ -928,10 +930,13 @@ FlipBook.prototype = {
 		this.totalDistance += this.totalLast;
 		if(this.startZoomGesture) {
 			if(Math.abs(js.Lib.window.innerWidth - RunTime.clientWidth) >= 10) this.hideBottomBar(); else if(this.bShowBottomBar) this.showBottomBar(null);
-			RunTime.hideCvs();
 		}
 		if(this.totalDistance <= 0) {
+			if(!this.isStartPage) {
+				if(this.topMenuBarBg.style.opacity != RunTime.bottomBarAlpha) this.showBottomBar(); else this.hideBottomBar();
+			}
 		}
+		this.isStartPage = false;
 		this.bFlipping = false;
 		e.stopPropagation();
 		this.touchActive = false;
@@ -958,7 +963,9 @@ FlipBook.prototype = {
 		this.zoomLeftPage.style.display = "inline";
 	}
 	,zoomOut: function() {
-		if(this.bShowBottomBar) this.showBottomBar(null);
+		if(!this.isStartPage) {
+			if(this.bShowBottomBar) this.showBottomBar(null);
+		}
 	}
 	,zoomAt: function(point0,point1) {
 		var num = 0;
@@ -970,7 +977,8 @@ FlipBook.prototype = {
 		this.zoomLeftPage.src = urlPage;
 	}
 	,onTouchStart: function(e) {
-		if(this.zoomStatus == core.ZoomStatus.zoomed) this.hideBottomBar();
+		if(this.zoomStatus == core.ZoomStatus.zoomed) {
+		}
 		var obj = e;
 		var touch = obj.touches[0];
 		if(this.onHighLightClick(touch.pageX,touch.pageY)) return;
@@ -1101,6 +1109,7 @@ FlipBook.prototype = {
 		RunTime.logPageView(pageNum + 1);
 	}
 	,turnPage: function(pageOffset) {
+		this.isStartPage = true;
 		if(this.bFlipping) return;
 		if(pageOffset == 0) return;
 		if(RunTime.book.rightToLeft) pageOffset = 0 - pageOffset;
@@ -1213,7 +1222,14 @@ FlipBook.prototype = {
 	}
 	,attachActions: function() {
 		if(this.root == null) return;
-		this.mask.onclick = $bind(this,this.onMouseDown);
+		if(js.Lib.window.navigator.userAgent.indexOf("Android") != -1 || js.Lib.window.navigator.userAgent.indexOf("iPhone") != -1) {
+		} else {
+			this.mask.ondblclick = $bind(this,this.onDblClick);
+			this.mask.onclick = $bind(this,this.onMouseDown);
+			this.mask.onmousedown = $bind(this,this.onMouseDown);
+			this.mask.onmousemove = $bind(this,this.onMouseMove);
+			this.mask.onmouseup = $bind(this,this.onMouseUp);
+		}
 		this.mask.ontouchstart = $bind(this,this.onTouchStart);
 		this.mask.ontouchmove = $bind(this,this.onTouchMove);
 		this.mask.ontouchend = $bind(this,this.onTouchEnd);
@@ -1243,10 +1259,6 @@ FlipBook.prototype = {
 			this.topFullTextContent.ontouchend = $bind(this,this.onTopBarTouchEnd);
 			this.topFullTextContent.ontouchcancel = $bind(this,this.onTopBarTouchEnd);
 		}
-		this.btnNextPage.onclick = $bind(this,this.turnToNextPage);
-		this.btnPrevPage.onclick = $bind(this,this.turnToPrevPage);
-		this.btnFirstPage.onclick = $bind(this,this.turnToFirstPage);
-		this.btnLastPage.onclick = $bind(this,this.turnToLastPage);
 		this.btnNextPage.ontouchstart = $bind(this,this.turnToNextPage);
 		this.btnPrevPage.ontouchstart = $bind(this,this.turnToPrevPage);
 		this.btnFirstPage.ontouchstart = $bind(this,this.turnToFirstPage);
@@ -1380,6 +1392,7 @@ DoubleFlipBook.prototype = $extend(FlipBook.prototype,{
 		}
 	}
 	,turnPage: function(pageOffset) {
+		this.isStartPage = true;
 		var current = 0;
 		if(this.currentPageNum != null) current = this.currentPageNum;
 		if(RunTime.book.rightToLeft) pageOffset = 0 - pageOffset;
@@ -1483,7 +1496,9 @@ DoubleFlipBook.prototype = $extend(FlipBook.prototype,{
 		this.zoomStatus = core.ZoomStatus.normal;
 		this.page_offsetX = 0;
 		this.page_offsetY = 0;
-		if(this.bShowBottomBar) this.showBottomBar(null);
+		if(!this.isStartPage) {
+			if(this.bShowBottomBar) this.showBottomBar(null);
+		}
 	}
 	,getCurrentPair: function() {
 		var current = 0;
@@ -2203,7 +2218,8 @@ RunTime.onOrientationChange = function(e) {
 	haxe.Timer.delay(RunTime.reLoadPage,1000);
 }
 RunTime.reLoadPage = function() {
-	js.Lib.window.location.reload();
+	var num = RunTime.flipBook.currentPageNum;
+	js.Lib.window.location.href = RunTime.urlIndex + "?page=" + Std.string(num);
 }
 RunTime.loadState = function() {
 	var bbv = true;
@@ -2219,7 +2235,10 @@ RunTime.loadState = function() {
 			if(item.value == "1") bbv = true; else if(item.value == "0") bbv = false;
 		} else if(item.key == "pcode") RunTime.pcode = item.value;
 	}
-	if(bbv == true) RunTime.flipBook.showBottomBar(); else RunTime.flipBook.hideBottomBar(null,false);
+	if(bbv == true) {
+		if(!RunTime.flipBook.isStartPage) RunTime.flipBook.showBottomBar();
+	} else RunTime.flipBook.hideBottomBar(null,false);
+	if(js.Lib.window.navigator.userAgent.indexOf("Android") != -1 || js.Lib.window.navigator.userAgent.indexOf("iPhone") != -1) RunTime.flipBook.hideBottomBar(null,false);
 }
 RunTime.requestLanguages = function(callbackFunc) {
 	orc.utils.Util.request(RunTime.urlLang,function(data) {
@@ -2368,20 +2387,18 @@ RunTime.showCvs = function() {
 	RunTime.flipBook.cvsBookmark.height = RunTime.clientHeight | 0;
 }
 RunTime.hideCvs = function() {
-	if(js.Lib.window.navigator.userAgent.indexOf("iPad") == -1) {
-		RunTime.flipBook.cvsButton.style.visibility = "hidden";
-		RunTime.flipBook.cvsHighLight.style.visibility = "hidden";
-		RunTime.flipBook.cvsNote.style.visibility = "hidden";
-		RunTime.flipBook.cvsBookmark.style.visibility = "hidden";
-		RunTime.flipBook.cvsButton.width = 1;
-		RunTime.flipBook.cvsButton.height = 1;
-		RunTime.flipBook.cvsHighLight.width = 1;
-		RunTime.flipBook.cvsHighLight.height = 1;
-		RunTime.flipBook.cvsNote.width = 1;
-		RunTime.flipBook.cvsNote.height = 1;
-		RunTime.flipBook.cvsBookmark.width = 1;
-		RunTime.flipBook.cvsBookmark.height = 1;
-	}
+	RunTime.flipBook.cvsButton.style.visibility = "hidden";
+	RunTime.flipBook.cvsHighLight.style.visibility = "hidden";
+	RunTime.flipBook.cvsNote.style.visibility = "hidden";
+	RunTime.flipBook.cvsBookmark.style.visibility = "hidden";
+	RunTime.flipBook.cvsButton.width = 1;
+	RunTime.flipBook.cvsButton.height = 1;
+	RunTime.flipBook.cvsHighLight.width = 1;
+	RunTime.flipBook.cvsHighLight.height = 1;
+	RunTime.flipBook.cvsNote.width = 1;
+	RunTime.flipBook.cvsNote.height = 1;
+	RunTime.flipBook.cvsBookmark.width = 1;
+	RunTime.flipBook.cvsBookmark.height = 1;
 }
 RunTime.requestBookInfo = function() {
 	orc.utils.Util.request(RunTime.urlBookinfo,function(data) {
@@ -3343,7 +3360,7 @@ RunTime.readLocalBookmarks = function() {
 				bookmark.fillData(szKey,localStorage.getItem(szKey));
 				bookmarks.push(bookmark);
 				RunTime.book.bookmarks.push(bookmark);
-				haxe.Log.trace("bookmark.text:" + bookmark.text + "  pagenum: " + bookmark.pageNum,{ fileName : "RunTime.hx", lineNumber : 2152, className : "RunTime", methodName : "readLocalBookmarks"});
+				haxe.Log.trace("bookmark.text:" + bookmark.text + "  pagenum: " + bookmark.pageNum,{ fileName : "RunTime.hx", lineNumber : 2168, className : "RunTime", methodName : "readLocalBookmarks"});
 			}
 		}
 	}
@@ -4278,7 +4295,6 @@ core.ButtonInfo = function() {
 	this.fontColor = "#ffffff";
 	this.text = "";
 	this.layer = "onpage";
-	this.isGif = false;
 	this.pageLayoutType = 0;
 	this.scale = 1;
 	this.offsetX = 0;
@@ -4302,10 +4318,7 @@ core.ButtonInfo.prototype = {
 				} else if(this.destination.indexOf("fun:") == 0) {
 					var fun = HxOverrides.substr(this.destination,4,null);
 					if(fun == "content") RunTime.flipBook.onContentsClick(null); else if(fun == "thumb") RunTime.flipBook.onThumbsClick(null); else if(fun == "showtxt") RunTime.flipBook.onShowTxtClick(null); else if(fun == "highlight") RunTime.flipBook.onButtonMaskClick(null); else if(fun == "bookmark") RunTime.flipBook.onButtonBookmark(null); else if(fun == "notes") RunTime.flipBook.onButtonNoteClick(null); else if(fun == "autoflip") RunTime.flipBook.onAutoFlipClick(null); else if(fun == "download") RunTime.onDownloadClick(null); else if(fun == "fliptofront") RunTime.flipBook.turnToFirstPage(null); else if(fun == "flipleft") RunTime.flipBook.turnToPrevPage(null); else if(fun == "flipright") RunTime.flipBook.turnToNextPage(null); else if(fun == "fliptoback") RunTime.flipBook.turnToLastPage(null);
-				} else {
-					RunTime.logClickLink(this.destination);
-					if("_self" == this.target) js.Lib.window.location.href = this.destination; else js.Lib.window.open(this.destination,this.target);
-				}
+				} else if(this.target == "_self") js.Lib.window.location.href = this.destination; else if(js.Lib.window.navigator.userAgent.indexOf("iPhone") != -1) js.Lib.window.location.href = this.destination; else js.Lib.window.open(this.destination,this.target);
 			}
 			break;
 		case "image":
@@ -4354,46 +4367,9 @@ core.ButtonInfo.prototype = {
 		var result = mouseX >= xx && mouseY >= yy && mouseX <= xx + ww && mouseY <= yy + hh;
 		return result;
 	}
-	,clearGifPlay: function() {
-		var cancelAnimationFrame = window.cancelAnimationFrame || (window.webkitCancelAnimationFrame || (window.mozCancelAnimationFrame || (window.oCancelAnimationFrame || window.msCancelAnimationFrame)));
-		cancelAnimationFrame(this.gifPlayerID);
-	}
 	,loadToRect: function(ctx,x,y,w,h) {
-		var _g = this;
 		if(w > 0 && h > 0) {
-			if(this.text == "") {
-				if(this.isGif) {
-					var supGifImg = new SuperGif({gif:this._imagePage});
-					var requestAnimationFrame = window.requestAnimationFrame || (window.webkitRequestAnimationFrame || (window.mozRequestAnimationFrame || (window.oRequestAnimationFrame || window.msRequestAnimationFrame)));
-					var _images_Page = [];
-					var gifImgLoaded = function() {
-						var gifImgLength = supGifImg.get_length();
-						var _g1 = 0;
-						while(_g1 < gifImgLength) {
-							var i = _g1++;
-							var sub_img = new Image();
-							sub_img.src = supGifImg.get_img(i);
-							_images_Page.push(sub_img);
-						}
-						var cIndex = 0;
-						var tIndex = _images_Page.length;
-						var showGif = (function($this) {
-							var $r;
-							var showGif1 = null;
-							showGif1 = function() {
-								ctx.drawImage(_images_Page[cIndex],0,0,_g._imagePage.width,_g._imagePage.height,x,y,w,h);
-								cIndex++;
-								if(cIndex >= tIndex) cIndex = 0;
-								_g.gifPlayerID = requestAnimationFrame(showGif1);
-							};
-							$r = showGif1;
-							return $r;
-						}(this));
-						_g.gifPlayerID = requestAnimationFrame(showGif);
-					};
-					supGifImg.load(gifImgLoaded);
-				} else ctx.drawImage(this._imagePage,0,0,this._imagePage.width,this._imagePage.height,x,y,w,h);
-			} else {
+			if(this.text == "") ctx.drawImage(this._imagePage,0,0,this._imagePage.width,this._imagePage.height,x,y,w,h); else {
 				ctx.save();
 				ctx.fillStyle = this.fontColor;
 				ctx.font = this.fontSize + "px " + "san-serif";
@@ -4435,7 +4411,6 @@ core.ButtonInfo.prototype = {
 		if(this._imagePage != null) return this._imagePage;
 		var img = new Image();
 		img.src = this.image;
-		if(img.src.substring(img.src.lastIndexOf(".") + 1,img.src.length).toLowerCase() == "gif") this.isGif = true; else this.isGif = false;
 		img.onload = onloadFunc;
 		this._imagePage = img;
 		return this._imagePage;
@@ -4711,7 +4686,7 @@ core.HotLink.prototype = {
 					if(fun == "content") RunTime.flipBook.onContentsClick(null); else if(fun == "thumb") RunTime.flipBook.onThumbsClick(null); else if(fun == "showtxt") RunTime.flipBook.onShowTxtClick(null); else if(fun == "highlight") RunTime.flipBook.onButtonMaskClick(null); else if(fun == "bookmark") RunTime.flipBook.onButtonBookmark(null); else if(fun == "notes") RunTime.flipBook.onButtonNoteClick(null); else if(fun == "autoflip") RunTime.flipBook.onAutoFlipClick(null); else if(fun == "download") RunTime.onDownloadClick(null); else if(fun == "fliptofront") RunTime.flipBook.turnToFirstPage(null); else if(fun == "flipleft") RunTime.flipBook.turnToPrevPage(null); else if(fun == "flipright") RunTime.flipBook.turnToNextPage(null); else if(fun == "fliptoback") RunTime.flipBook.turnToLastPage(null);
 				} else {
 					RunTime.logClickLink(this.destination);
-					if("_self" == this.target) js.Lib.window.location.href = this.destination; else js.Lib.window.open(this.destination,this.target);
+					if("_self" == this.target) js.Lib.window.location.href = this.destination; else if(js.Lib.window.navigator.userAgent.indexOf("iPhone") != -1) js.Lib.window.location.href = this.destination; else js.Lib.window.open(this.destination,this.target);
 				}
 			}
 			break;
@@ -4868,9 +4843,20 @@ core.HtmlHelper.toSnsHtml = function(xml) {
 	return s;
 }
 core.HtmlHelper.toSnsNodeHtml = function(xml) {
-	var s = "<p style='float:left;width:150px;height:38px;'>";
-	s += "<a href='" + xml.get("href") + "'><img style='vertical-align:middle;' src='" + RunTime.urlRoot + xml.get("logoUrl") + "'>" + "</a>";
-	s += "<span onclick=\"RunTime.navigateUrl('" + xml.get("href") + "')\" style='vertical-align:middle;'> " + xml.get("name") + "</span>";
+	var baseUrl = js.Lib.window.location.href.split("?")[0];
+	var url_array = baseUrl.split("/");
+	var newUrl = "";
+	if(url_array.length > 0) {
+		var _g1 = 0, _g = url_array.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(i != url_array.length - 1) newUrl += url_array[i] + "/";
+		}
+	}
+	var url = xml.get("href") + newUrl;
+	var s = "<p style='float:left;width:150px;height:35px;'>";
+	s += "<a href='" + url + "'><img style='vertical-align:middle;' src='" + xml.get("logoUrl") + "'>" + "</a> ";
+	s += "<span onclick=\"RunTime.navigateUrl('" + url + "')\" style='vertical-align:middle;'>" + xml.get("name") + "</span>";
 	s += "</p>";
 	return s;
 }
@@ -5025,7 +5011,9 @@ core.HtmlHelper.toSlideshowPopupHtml = function(item) {
 		w = item.popupWidth;
 		h = item.popupHeight;
 	}
-	if(RunTime.clientWidth < 480) {
+	if(item.popupWidth == null) item.popupWidth = 340;
+	if(item.popupHeight == null) item.popupHeight = 600;
+	if(RunTime.clientWidth < 720) {
 		w = w * (RunTime.clientWidth / item.popupWidth) * 0.8 | 0;
 		h = h * (RunTime.clientHeight / item.popupHeight) * 0.8 | 0;
 	}
@@ -5153,18 +5141,22 @@ core.HtmlHelper.toPopupImageHtml = function(item,success) {
 	if(success != null) success(s);
 }
 core.HtmlHelper.toPopupVideoHtml = function(item) {
-	var w = 600;
-	var h = 480;
+	var w = 480;
+	var h = 600;
 	if(item.popupWidth != null && item.popupHeight != null) {
 		w = item.popupWidth;
 		h = item.popupHeight;
 	}
-	if(RunTime.clientWidth < 480) {
-		w = w * (RunTime.clientWidth / item.popupWidth) * 0.8 | 0;
-		h = h * (RunTime.clientHeight / item.popupHeight) * 0.8 | 0;
+	if(!item.popupWidth) item.popupWidth = 340;
+	if(!item.popupHeight) item.popupHeight = 600;
+	if(RunTime.clientWidth < 720) {
+		w = w * (RunTime.clientWidth / item.popupWidth) * 0.6 | 0;
+		h = h * (RunTime.clientHeight / item.popupHeight) * 0.6 | 0;
 	}
 	var left = (RunTime.clientWidth - w) / 2 | 0;
 	var top = (RunTime.clientHeight - h) / 2 | 0;
+	if(w <= 0) w = 600;
+	if(h <= 0) h = 480;
 	var s = "";
 	s += "<div id=\"popupVideo\"style=\"position:absolute; z-index:201;left:" + Std.string(left) + "px; top:" + Std.string(top) + "px; width:" + Std.string(w) + "px; height:" + Std.string(h) + "px; background-color:#ffffff; -webkit-transform: scale(0.2); -webkit-transition: 0s ease-out; \">";
 	if(item.youtubeId == null || item.youtubeId == "") {
@@ -5217,13 +5209,15 @@ core.HtmlHelper.toPopupAudioHtml = function(item) {
 	return s;
 }
 core.HtmlHelper.toPopupHtml = function(item) {
-	var w = 600;
-	var h = 480;
+	var w = 480;
+	var h = 600;
 	if(item.popupWidth != null && item.popupHeight != null) {
 		w = item.popupWidth;
 		h = item.popupHeight;
 	}
-	if(RunTime.clientWidth < 480) {
+	if(!item.popupWidth) item.popupWidth = 340;
+	if(!item.popupHeight) item.popupHeight = 600;
+	if(RunTime.clientWidth < 720) {
 		w = w * (RunTime.clientWidth / item.popupWidth) * 0.8 | 0;
 		h = h * (RunTime.clientHeight / item.popupHeight) * 0.8 | 0;
 	}
@@ -5253,11 +5247,17 @@ core.HtmlHelper.toPopupHtml = function(item) {
 	return s;
 }
 core.HtmlHelper.toBookmarkPopupHtml = function(item) {
-	var w = 600;
-	var h = 480;
-	if(RunTime.clientWidth < 480) {
-		w = w * (RunTime.clientWidth / w) * 0.8 | 0;
-		h = h * (RunTime.clientHeight / h) * 0.8 | 0;
+	var w = 480;
+	var h = 600;
+	if(item.popupWidth != null && item.popupHeight != null) {
+		w = item.popupWidth;
+		h = item.popupHeight;
+	}
+	if(!item.popupWidth) item.popupWidth = 340;
+	if(!item.popupHeight) item.popupHeight = 600;
+	if(RunTime.clientWidth < 720) {
+		w = w * (RunTime.clientWidth / item.popupWidth) * 0.8 | 0;
+		h = h * (RunTime.clientHeight / item.popupHeight) * 0.8 | 0;
 	}
 	var left = (RunTime.clientWidth - w) / 2 | 0;
 	var top = (RunTime.clientHeight - h) / 2 | 0;
@@ -5268,13 +5268,15 @@ core.HtmlHelper.toBookmarkPopupHtml = function(item) {
 	return s;
 }
 core.HtmlHelper.toHighLightPopupHtml = function(item,szSaveFunName,szDeleteFunName) {
-	var w = 300;
-	var h = 200;
+	var w = 480;
+	var h = 600;
 	if(item.popupWidth != null && item.popupHeight != null) {
 		w = item.popupWidth;
 		h = item.popupHeight;
 	}
-	if(RunTime.clientWidth < 480) {
+	if(!item.popupWidth) item.popupWidth = 340;
+	if(!item.popupHeight) item.popupHeight = 600;
+	if(RunTime.clientWidth < 720) {
 		w = w * (RunTime.clientWidth / item.popupWidth) * 0.8 | 0;
 		h = h * (RunTime.clientHeight / item.popupHeight) * 0.8 | 0;
 	}
@@ -5293,13 +5295,15 @@ core.HtmlHelper.toHighLightPopupHtml = function(item,szSaveFunName,szDeleteFunNa
 	return s;
 }
 core.HtmlHelper.toNotePopupHtml = function(item,szSaveFunName,szDeleteFunName) {
-	var w = 300;
-	var h = 200;
+	var w = 480;
+	var h = 600;
 	if(item.popupWidth != null && item.popupHeight != null) {
 		w = item.popupWidth;
 		h = item.popupHeight;
 	}
-	if(RunTime.clientWidth < 480) {
+	if(!item.popupWidth) item.popupWidth = 340;
+	if(!item.popupHeight) item.popupHeight = 600;
+	if(RunTime.clientWidth < 720) {
 		w = w * (RunTime.clientWidth / item.popupWidth) * 0.8 | 0;
 		h = h * (RunTime.clientHeight / item.popupHeight) * 0.8 | 0;
 	}
