@@ -17,8 +17,8 @@ Learn more about Flex at http://flex.org
 <!--  BEGIN Browser History required section -->
 <link rel="stylesheet" type="text/css" href="../history/history.css" />
 <!--  END Browser History required section -->
-<title>Hot English Magazine December 2013</title>
-<META NAME="description" content="• rl (if we aren't already!) No pro e Sign up to bl m!  our newsletter for  the latest news all from  English Learn  Hot  + FR  EE  English  lessons: www.learnhotenglish.com www.facebook.com/LearnHotE">
+<title>December</title>
+<META NAME="description" content="">
 
 <script src="../AC_OETags.js" language="javascript"></script>
 
@@ -64,7 +64,7 @@ body { margin: 0px; overflow:hidden }
   
   var iRegex = /android|(iP(hone|ad))/i;
   if (iRegex.test(navigator.userAgent) || isMetroIE()){
-      var url= "../html5.html?page=44";
+      var url= "../html5.html?", i=document.location.href.indexOf('?'); url+= i==-1 ? 'page=44' : document.location.href.substr(i+1);
       if( false &&  window.parent)
          window.parent.location=url;
       else
@@ -159,7 +159,7 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 </script>
 
 <noscript>
-• rl (if we aren't already!) No pro e Sign up to bl m!  our newsletter for  the latest news all from  English Learn  Hot  + FR  EE  English  lessons: www.learnhotenglish.com www.facebook.com/LearnHotEnglish
+
 </noscript>
 
 
