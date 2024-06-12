@@ -1,0 +1,38 @@
+<bookinfo id="I_Love_English_278_December_2015" autoFlipSeconds="5" autoMoveAfterZoom="false" bgColor="#454545 " bgImage="content/images/bg.jpg" shadow="true" pageWidth="1240" pageHeight="1654" flipSpeedBoost="80" title="I Love English 278 December 2015" author="Javier Oteiza" zipIcon="content/images/iconZip.gif" exeIcon="content/images/iconExe.gif" companyUrl="" gateway="http://www.flipmall.net/sendmail/email.php" shareUrl="index.html" bookmarkWidth="18" bookmarkHeight="150" bookmarkFontSize="10" defaultZoomScale="2" clickToZoom="singleclick" windowColor="#0066CC " rightToLeft="false" autoFlip="false" fitScreenAfterZoom="false" zoomAfterLoaded="false" limitTo100="false" showZoomBox="false" mouseWheelZoom="false" flipArrow="true" bgPosition="stretch" bookSize="10" thickness="0" companyName="Makser Books" companyAddress="" tel="" email="" zipUrl="" exeUrl="" fullScreen="false" hardCover="false" pdfUrl="" lic="obWgqJarpKKgn6Rs" password="gbqVb3aloa15" analyticsUA="" companyLogo="content/images/logo makser books azul mejorado.png" loadingLogo="content/images/logo makser books negro mejorado.png">
+	<leftmenu showTabBackground="true" visible="false" hideAfterZoom="true">
+		<issues visible="false" icon=""/>
+		<toc visible="false" icon=""/>
+		<thumbs visible="false" icon=""/>
+		<email visible="false" icon=""/>
+		<sns visible="false" icon=""/>
+		<print visible="false" icon=""/>
+		<pdf visible="false" singlePage="true" doublePage="true" entirePDF="false" icon=""/>
+		<download visible="false" icon=""/>
+		<setting visible="false" icon=""/>
+		<about visible="true" icon=""/>
+		<close visible="false" icon=""/></leftmenu>
+	<bottommenu background="content/images/menuBackground.png" visible="true" iconSameSize="false" position="top" hideAfterZoom="true" showBackground="false" autoHideOnFullScreen="true">
+		<help visible="false" url="http://www.ePageCreator.net/readerhelp/index.html" icon=""/>
+		<info visible="false" url="http://www.ePageCreator.net" icon=""/>
+		<zoom visible="true" mode="normal" icon="" dicon=""/>
+		<autoflip visible="false" icon=""/>
+		<search visible="false" icon=""/>
+		<highlight visible="false" icon=""/>
+		<bookmark visible="false" icon=""/>
+		<notes visible="false" icon=""/>
+		<fullscreen visible="true" icon="" dicon=""/>
+		<sound visible="false" icon="" dicon=""/><back visible="false" icon=""/><forward visible="false" icon=""/><firstpage icon=""/><prevpage icon=""/><nextpage icon=""/><lastpage icon=""/></bottommenu>
+	<contextmenu>
+	</contextmenu>
+	<tks>
+		<tk begin="1" end="2" value="1"/>
+		<tk begin="3" end="5" value="2"/>
+		<tk begin="6" end="10" value="3"/>
+		<tk begin="11" end="20" value="4"/>
+		<tk begin="21" end="30" value="5"/>
+		<tk begin="31" end="40" value="6"/>
+		<tk begin="41" end="60" value="7"/>
+		<tk begin="61" end="120" value="8"/>
+		<tk begin="121" end="0" value="9"/>
+	</tks>
+	<bottomthumb bgAlpha="0" bgColor="#000000" visible="false"/><tooltip bgColor="#000000 " fgColor="#FFFFFF " showZoomTip="true" showFlipTip="true"/><bookLogo url="content/images/logo makser books azul mejorado.png" href=""/></bookinfo>
